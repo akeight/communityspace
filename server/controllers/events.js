@@ -13,7 +13,9 @@ export const getAllEvents = async (req, res) => {
 export const getEventById = async (req, res) => {
     const { id } = req.params;
     try {
+        console.debug('GET /api/events/:id requested id=', id);
         const result = await pool.query('SELECT * FROM events WHERE id = $1', [id]);
+        console.debug('DB returned rows:', result.rows.length);
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Event not found' });
         }

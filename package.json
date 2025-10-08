@@ -2,13 +2,14 @@
   "name": "unitygridplaza",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"cd client && vite\" \"cd server && nodemon server\"",
-    "start": "cd server && node server",
-    "build": "cd client && vite build"
+  "start": "concurrently \"node ./server/server.js\" \"sh -c 'cd client && npx serve -s ./server/public -l 5173'\"",
+  "dev": "concurrently \"nodemon ./server/server.js\" \"sh -c 'cd client && npx vite'\"",
+    "reset": "node ./server/config/reset.js"
   },
   "dependencies": {
     "@picocss/pico": "^1.5.7",
     "concurrently": "^7.6.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "nodemon": "^2.0.22",

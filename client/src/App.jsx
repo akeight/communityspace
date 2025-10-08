@@ -1,55 +1,35 @@
-import React from 'react'
-import { useRoutes, Link } from 'react-router-dom'
-import Locations from './pages/Locations'
-import LocationEvents from './pages/LocationEvents'
-import Events from './components/Event'
-import './App.css'
+import React from "react";
+import { Link, useRoutes } from "react-router-dom";
+import Locations from "./pages/Locations";
+import LocationEvents from "./pages/LocationEvents";
+import AllEvents from "./pages/AllEvents";
 
 const App = () => {
-  let element = useRoutes([
-    {
-      path: '/',
-      element: <Locations />
-    },
-    {
-      path: '/echolounge',
-      element: <LocationEvents index={1} />
-    },
-    {
-      path: '/houseofblues',
-      element: <LocationEvents index={2} />
-    },
-    {
-      path: '/pavilion',
-      element: <LocationEvents index={3} />
-    },
-    {
-      path: '/americanairlines',
-      element: <LocationEvents index={4} />
-    },
-    {
-      path: '/events',
-      element: <Events />
-    }
-  ])
+  const element = useRoutes([
+    { path: "/", element: <Locations /> },
+    { path: "/locations/:id", element: <LocationEvents /> },
+    { path: "/events", element: <AllEvents /> },
+  ]);
 
   return (
-    <div className='app'>
-
-      <header className='main-header'>
-        <h1>UnityGrid Plaza</h1>
-
-        <div className='header-buttons'>
-          <Link to='/' role='button'>Home</Link>
-          <Link to='/events' role='button'>Events</Link>
-        </div>
+    <div className="app">
+      <div className="page-bg" aria-hidden />
+      <header className="main-header container">
+        <nav>
+        <ul>
+          <li><h1>TrailQuest</h1></li>
+        </ul>
+        <ul>
+          <div className="button">
+          <li><Link to="/" role="button">Home</Link></li>
+          <li><Link to="/events" role="button">All Events</Link></li>
+          </div>
+       </ul>
+        </nav>
       </header>
-
-      <main>
-        {element}
-      </main>
+      <main className="container">{element}</main>
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;

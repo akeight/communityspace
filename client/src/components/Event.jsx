@@ -1,62 +1,80 @@
-import React, { useState, useEffect } from 'react'
-import '../css/Event.css'
+import React, { useEffect, useState } from "react";
+import EventsAPI from "../services/EventsAPI";
+import "../css/Event.css";
+import Countdown from "./Countdown";
+import { toUtcIso } from "../utils/time";
+
+
 
 const Event = (props) => {
+  const [event, setEvent] = useState(props.event ?? null);
+  const ISO = new Date(event.startsAt).toLocaleString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
 
-    const [event, setEvent] = useState([])
-    const [time, setTime] = useState([])
-    const [remaining, setRemaining] = useState([])
+  const startsAtRaw = event?.startsAt ?? event?.starts_at ?? null;
 
-    useEffect(() => {
-        (async () => {
-            try {
-                const eventData = await EventsAPI.getEventsById(props.id)
-                setEvent(eventData)
-            }
-            catch (error) {
-                throw error
-            }
-        }) ()
-    }, [])
+    const isoUtc = toUtcIso(startsAtRaw);
 
-    useEffect(() => {
-        (async () => {
-            try {
-                const result = await dates.formatTime(event.time)
-                setTime(result)
-            }
-            catch (error) {
-                throw error
-            }
-        }) ()
-    }, [event])
+  useEffect(() => {
+    
+    if (props.event) {
+      setEvent(props.event);
+      return;
+    }
+    if (!props.id) {
+      setEvent(null);
+      return;
+    }
+    (async () => {
+      try {
+        const eventData = await EventsAPI.getEventById(props.id);
+        setEvent(eventData);
+      } catch (error) {
+        console.error("Failed to load event:", error);
+        setEvent(null);
+      }
+    })();
+  }, [props.event, props.id]);
 
-    useEffect(() => {
-        (async () => {
-            try {
-                const timeRemaining = await dates.formatRemainingTime(event.remaining)
-                setRemaining(timeRemaining)
-                dates.formatNegativeTimeRemaining(remaining, event.id)
-            }
-            catch (error) {
-                throw error
-            }
-        }) ()
-    }, [event])
-
+  if (!event) {
     return (
-        <article className='event-information'>
-            <img src={event.image} />
+      <article className="card">
+        <header><h3>No event selected <i class="fa-utility-duo fa-semibold fa-face-frown"></i></h3></header>
+      </article>
+    );
+  }
 
-            <div className='event-information-overlay'>
-                <div className='text'>
-                    <h3>{event.title}</h3>
-                    <p><i className="fa-regular fa-calendar fa-bounce"></i> {event.date} <br /> {time}</p>
-                    <p id={`remaining-${event.id}`}>{remaining}</p>
-                </div>
-            </div>
-        </article>
-    )
-}
+  return (
+    <div className="grid">
+    <article className="card">
+      <header>
+        <h3>{event.title}</h3>
+      </header>
+      <p>
+        <i class="fa-utility-duo fa-semibold fa-calendar"></i>
+        <br/>
+        {ISO}
+      </p>
+      {isoUtc && (
+        <Countdown
+            isoUtc={isoUtc}
+            doneText="Past event"
+        />
+    )}
+      <p>{event.price ? <><i class="fa-utility-duo fa-semibold fa-circle-dollar"></i>{event.price}</> : null}
+      </p>
+      <p>{event.description}</p>
+      {Array.isArray(event.tags) && event.tags.length > 0 && (
+        <small>{event.tags.join(", ")}</small>
+      )}
+    </article>
+    </div>
+  );
+};
 
-export default Event
+export default Event;

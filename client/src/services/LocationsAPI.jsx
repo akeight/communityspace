@@ -1,4 +1,4 @@
-export const getAllLocations = async () => {
+const getAllLocations = async () => {
      try {
         const response = await fetch('/api/locations');
         if (!response.ok) {
@@ -11,3 +11,5 @@ export const getAllLocations = async () => {
         throw error;
     }
 };
+
+export default { getAllLocations };
